@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Crow Software — Engineering the Future</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #050507;
+  --bg-elevated: #0c0c10;
+  --bg-card: #101016;
+  --bg-card-hover: #16161e;
+  --border: #1a1a24;
+  --border-hover: #2a2a38;
+  --text: #e8e8ec;
+  --text-secondary: #9494a0;
+  --text-muted: #5a5a68;
+  --accent-gold: #d4a853;
+  --accent-gold-dim: #d4a85315;
+  --accent-gold-mid: #d4a85340;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Outfit', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
+  line-height: 1.6; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+
+body::after {
+  content: ''; position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 1.25rem 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+  backdrop-filter: blur(24px); background: rgba(5, 5, 7, 0.8);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-brand { display: flex; align-items: center; gap: 0.85rem; }
+
+.nav-logo-img {
+  width: 38px; height: 38px; object-fit: contain;
+  filter: invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.1)); transition: filter 0.3s;
+}
+.nav-brand:hover .nav-logo-img { filter: invert(1) drop-shadow(0 0 8px rgba(212,168,83,0.3)); }
+
+.nav-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: 0.01em; }
+.nav-name span { color: var(--accent-gold); }
+
+.nav-right { display: flex; align-items: center; gap: 2.25rem; }
+.nav-links { display: flex; gap: 2.25rem; list-style: none; }
+.nav-links a {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);
+  letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.3s;
+}
+.nav-links a:hover { color: var(--accent-gold); }
+
+/* Language switcher */
+.lang-switch {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--border); border-radius: 2px; overflow: hidden;
+}
+
+.lang-btn {
+  font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.06em;
+  padding: 0.4rem 0.7rem; background: transparent; color: var(--text-muted);
+  border: none; cursor: pointer; transition: all 0.3s; text-transform: uppercase;
+}
+.lang-btn.active { background: var(--accent-gold); color: var(--bg); }
+.lang-btn:not(.active):hover { color: var(--text); }
+
+.nav-cta {
+  font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 0.6rem 1.5rem;
+  border: 1px solid var(--accent-gold); color: var(--accent-gold);
+  border-radius: 2px; transition: all 0.3s; cursor: pointer; background: none;
+}
+.nav-cta:hover { background: var(--accent-gold); color: var(--bg); }
+
+/* HERO */
+.hero {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center; padding: 8rem 3rem 4rem;
+  max-width: 1400px; margin: 0 auto; overflow: hidden; gap: 2rem;
+}
+
+.hero-content { position: relative; z-index: 2; }
+
+.hero-tag {
+  font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-gold);
+  letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 2.5rem;
+  opacity: 0; animation: fadeUp 0.9s ease forwards 0.3s;
+  display: flex; align-items: center; gap: 1rem;
+}
+.hero-tag::before { content: ''; width: 40px; height: 1px; background: var(--accent-gold-mid); }
+
+.hero h1 {
+  font-family: var(--font-display); font-size: clamp(3rem, 5.5vw, 5rem); font-weight: 400;
+  line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 1.75rem;
+  opacity: 0; animation: fadeUp 0.9s ease forwards 0.5s;
+}
+.hero h1 em { font-style: italic; color: var(--accent-gold); }
+
+.hero-desc {
+  max-width: 500px; font-size: 1.05rem; color: var(--text-secondary);
+  font-weight: 300; line-height: 1.75; margin-bottom: 3rem;
+  opacity: 0; animation: fadeUp 0.9s ease forwards 0.7s;
+}
+
+.hero-actions { display: flex; gap: 1rem; opacity: 0; animation: fadeUp 0.9s ease forwards 0.9s; }
+
+.hero-visual { position: relative; display: flex; align-items: center; justify-content: center; z-index: 1; }
+
+.hero-crow-photo {
+  width: 100%; max-width: 580px; height: auto; object-fit: contain;
+  filter: brightness(0.9) contrast(1.1);
+  opacity: 0; animation: crowReveal 1.2s ease forwards 0.6s; mix-blend-mode: lighten;
+}
+
+.hero-crow-wrapper {
+  position: relative;
+  mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, black 40%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, black 40%, transparent 75%);
+}
+
+.hero-crow-glow {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--accent-gold-dim) 0%, transparent 60%);
+  filter: blur(60px); pointer-events: none;
+}
+
+@keyframes crowReveal {
+  0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.btn-primary {
+  font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 1rem 2.5rem;
+  background: var(--accent-gold); color: var(--bg); border: none;
+  border-radius: 2px; cursor: pointer; font-weight: 500; transition: all 0.3s;
+}
+.btn-primary:hover { background: #e0b86a; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,168,83,0.2); }
+
+.btn-secondary {
+  font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 1rem 2.5rem;
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border); border-radius: 2px; cursor: pointer; transition: all 0.3s;
+}
+.btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+/* CLIENT BAR */
+.client-bar {
+  padding: 3rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  overflow: hidden; position: relative;
+}
+.client-bar::before, .client-bar::after { content: ''; position: absolute; top: 0; bottom: 0; width: 120px; z-index: 2; }
+.client-bar::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+.client-bar::after { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+
+.client-track { display: flex; gap: 4rem; align-items: center; animation: scroll 25s linear infinite; width: max-content; }
+.client-track span { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
+
+@keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* SECTIONS */
+section { padding: 7rem 3rem; max-width: 1300px; margin: 0 auto; }
+.section-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1rem; }
+.section-number { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-gold); letter-spacing: 0.1em; }
+.section-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.15em; }
+.section-line { flex: 1; height: 1px; background: var(--border); }
+
+.section-headline { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 400; line-height: 1.15; margin-bottom: 1.25rem; }
+.section-headline em { font-style: italic; color: var(--accent-gold); }
+
+.section-subtitle { font-size: 1.05rem; color: var(--text-secondary); font-weight: 300; max-width: 600px; line-height: 1.7; margin-bottom: 4rem; }
+
+/* SERVICES */
+.services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+.service-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 2.75rem; position: relative; overflow: hidden; transition: all 0.4s; }
+.service-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-3px); }
+.service-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity: 0; transition: opacity 0.4s; }
+.service-card:hover::after { opacity: 0.6; }
+.service-icon { width: 48px; height: 48px; border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.75rem; color: var(--accent-gold); font-size: 1.2rem; background: var(--bg-elevated); }
+.service-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; margin-bottom: 0.75rem; }
+.service-desc { font-size: 0.9rem; color: var(--text-secondary); font-weight: 300; line-height: 1.7; margin-bottom: 1.5rem; }
+.service-features { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+.service-features li { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.04em; padding-left: 1rem; position: relative; }
+.service-features li::before { content: '›'; position: absolute; left: 0; color: var(--accent-gold); }
+
+/* ABOUT */
+.about-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+.about-text p { font-size: 1rem; color: var(--text-secondary); font-weight: 300; line-height: 1.8; margin-bottom: 1.5rem; }
+.about-text p strong { color: var(--text); font-weight: 500; }
+.about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 0.5rem; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; text-align: center; }
+.stat-number { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--accent-gold); line-height: 1; margin-bottom: 0.5rem; }
+.stat-label { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.about-crow-visual { background: transparent; border: none; border-radius: 0; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; min-height: 450px; }
+
+.about-crow-img {
+  width: 420px; height: 420px; object-fit: cover; object-position: center;
+  filter: brightness(0.55) contrast(1.3) grayscale(0.15); mix-blend-mode: lighten;
+  position: relative; z-index: 1; opacity: 0.85; transform: scaleX(-1); border-radius: 50%;
+  mask-image: radial-gradient(circle, black 35%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle, black 35%, transparent 70%);
+}
+
+/* PORTFOLIO */
+.portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+.portfolio-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.4s; cursor: pointer; }
+.portfolio-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+.portfolio-card.large { grid-column: span 2; }
+.portfolio-preview { height: 220px; background: var(--bg-elevated); position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.portfolio-preview::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, var(--bg-card) 100%); }
+.portfolio-preview-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.08em; z-index: 1; }
+.portfolio-card.large .portfolio-preview { height: 280px; }
+.portfolio-info { padding: 1.75rem; }
+.portfolio-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+.portfolio-category { font-family: var(--font-mono); font-size: 0.6rem; color: var(--accent-gold); letter-spacing: 0.12em; text-transform: uppercase; }
+.portfolio-year { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted); letter-spacing: 0.06em; }
+.portfolio-title { font-family: var(--font-display); font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem; }
+.portfolio-desc { font-size: 0.85rem; color: var(--text-secondary); font-weight: 300; line-height: 1.6; margin-bottom: 1.25rem; }
+.portfolio-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.tag { font-family: var(--font-mono); font-size: 0.6rem; color: var(--text-muted); padding: 0.3rem 0.65rem; border: 1px solid var(--border); border-radius: 100px; letter-spacing: 0.04em; }
+
+/* TECH STACK */
+.tech-layout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+.tech-group { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 2.25rem; transition: border-color 0.3s; }
+.tech-group:hover { border-color: var(--border-hover); }
+.tech-group-title { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent-gold); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+.tech-list { display: flex; flex-direction: column; gap: 0.85rem; }
+.tech-item { font-size: 0.9rem; color: var(--text-secondary); font-weight: 300; display: flex; align-items: center; gap: 0.6rem; }
+.tech-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-gold); flex-shrink: 0; }
+
+/* CTA BANNER */
+.cta-banner { max-width: 1300px; margin: 0 auto 5rem; padding: 0 3rem; }
+.cta-inner { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 5rem; text-align: center; position: relative; overflow: hidden; }
+.cta-inner::before { content: ''; position: absolute; top: -50%; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, var(--accent-gold-dim) 0%, transparent 60%); filter: blur(40px); }
+.cta-headline { font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 400; margin-bottom: 1rem; position: relative; }
+.cta-headline em { font-style: italic; color: var(--accent-gold); }
+.cta-sub { font-size: 1rem; color: var(--text-secondary); font-weight: 300; margin-bottom: 2.5rem; position: relative; }
+.cta-inner .btn-primary { position: relative; }
+
+/* FOOTER */
+footer { padding: 3rem 3rem; max-width: 1300px; margin: 0 auto; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.footer-brand { display: flex; align-items: center; gap: 0.7rem; }
+.footer-logo-img { width: 22px; height: 22px; object-fit: contain; filter: invert(1); opacity: 0.4; }
+.footer-text { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.05em; }
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.05em; transition: color 0.3s; }
+.footer-links a:hover { color: var(--accent-gold); }
+
+/* ANIMATIONS */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger .reveal:nth-child(1) { transition-delay: 0s; }
+.reveal-stagger .reveal:nth-child(2) { transition-delay: 0.1s; }
+.reveal-stagger .reveal:nth-child(3) { transition-delay: 0.15s; }
+.reveal-stagger .reveal:nth-child(4) { transition-delay: 0.2s; }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; text-align: center; }
+  .hero-content { order: 2; } .hero-visual { order: 1; }
+  .hero-tag { justify-content: center; }
+  .hero-desc { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .services-grid, .portfolio-grid { grid-template-columns: 1fr; }
+  .portfolio-card.large { grid-column: span 1; }
+  .tech-layout { grid-template-columns: repeat(2, 1fr); }
+  .about-layout { grid-template-columns: 1fr; gap: 3rem; }
+}
+
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .nav-right { gap: 1rem; }
+  section, .cta-banner { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .hero { padding: 7rem 1.5rem 3rem; }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .hero-actions button { width: 100%; }
+  .tech-layout { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+  .cta-inner { padding: 3rem 2rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-brand">
+    <img src="logo.png" alt="Black Crow Software" class="nav-logo-img">
+    <span class="nav-name">Black Crow <span>Software</span></span>
+  </a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#services" data-i18n="nav.services">Services</a></li>
+      <li><a href="#about" data-i18n="nav.about">About</a></li>
+      <li><a href="#portfolio" data-i18n="nav.work">Work</a></li>
+      <li><a href="#tech" data-i18n="nav.tech">Tech</a></li>
+    </ul>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="es">ES</button>
+    </div>
+    <button class="nav-cta" data-i18n="nav.cta">Get in Touch</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-tag" data-i18n="hero.tag">Software Engineering Studio</span>
+    <h1 data-i18n="hero.title">We build software<br>that <em>elevates</em></h1>
+    <p class="hero-desc" data-i18n="hero.desc">
+      Black Crow Software is a boutique engineering studio specializing in custom software, 
+      AI solutions, and cloud infrastructure. We turn complex problems into elegant, scalable systems.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" data-i18n="hero.cta1">Start a Project</button>
+      <button class="btn-secondary" data-i18n="hero.cta2">View Our Work</button>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-crow-glow"></div>
+    <div class="hero-crow-wrapper">
+      <img src="crow.png" alt="Black Crow" class="hero-crow-photo">
+    </div>
+  </div>
+</section>
+
+<div class="client-bar">
+  <div class="client-track">
+    <span>TechVentures</span><span>◆</span><span>NovaPay</span><span>◆</span>
+    <span>Helios Health</span><span>◆</span><span>Meridian Labs</span><span>◆</span>
+    <span>Atlas Finance</span><span>◆</span><span>Orion Dynamics</span><span>◆</span>
+    <span>Vertex AI</span><span>◆</span><span>Stratos Cloud</span><span>◆</span>
+    <span>TechVentures</span><span>◆</span><span>NovaPay</span><span>◆</span>
+    <span>Helios Health</span><span>◆</span><span>Meridian Labs</span><span>◆</span>
+    <span>Atlas Finance</span><span>◆</span><span>Orion Dynamics</span><span>◆</span>
+    <span>Vertex AI</span><span>◆</span><span>Stratos Cloud</span><span>◆</span>
+  </div>
+</div>
+
+<section id="services">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <span class="section-label" data-i18n="services.label">Services</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-headline" data-i18n="services.headline">What we <em>do</em></h2>
+  <p class="section-subtitle" data-i18n="services.subtitle">End-to-end engineering services, from ideation through deployment and beyond. We don't just write code — we architect solutions.</p>
+  <div class="services-grid reveal-stagger">
+    <div class="service-card reveal">
+      <div class="service-icon">⚙</div>
+      <h3 class="service-title" data-i18n="services.custom.title">Custom Software Development</h3>
+      <p class="service-desc" data-i18n="services.custom.desc">Tailored systems built from the ground up. Enterprise platforms, internal tools, SaaS products — designed for scale from day one.</p>
+      <ul class="service-features">
+        <li data-i18n="services.custom.f1">Full-stack architecture & development</li>
+        <li data-i18n="services.custom.f2">API design & microservices</li>
+        <li data-i18n="services.custom.f3">Legacy system modernization</li>
+        <li data-i18n="services.custom.f4">Performance optimization</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">◈</div>
+      <h3 class="service-title" data-i18n="services.ai.title">AI & Machine Learning</h3>
+      <p class="service-desc" data-i18n="services.ai.desc">Intelligent systems that learn, adapt, and deliver real business value. From NLP to computer vision to predictive analytics.</p>
+      <ul class="service-features">
+        <li data-i18n="services.ai.f1">Custom model training & fine-tuning</li>
+        <li data-i18n="services.ai.f2">LLM integration & RAG pipelines</li>
+        <li data-i18n="services.ai.f3">MLOps & model deployment</li>
+        <li data-i18n="services.ai.f4">Data pipeline engineering</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">◐</div>
+      <h3 class="service-title" data-i18n="services.web.title">Web & Mobile Apps</h3>
+      <p class="service-desc" data-i18n="services.web.desc">Beautiful, performant applications across every platform. Responsive web apps and native mobile experiences that users love.</p>
+      <ul class="service-features">
+        <li data-i18n="services.web.f1">React, Next.js & Vue applications</li>
+        <li data-i18n="services.web.f2">iOS & Android development</li>
+        <li data-i18n="services.web.f3">Progressive web apps</li>
+        <li data-i18n="services.web.f4">UI/UX design & prototyping</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">☁</div>
+      <h3 class="service-title" data-i18n="services.cloud.title">Cloud & DevOps</h3>
+      <p class="service-desc" data-i18n="services.cloud.desc">Infrastructure that scales with your ambition. We design, build, and manage cloud environments that are secure, fast, and cost-efficient.</p>
+      <ul class="service-features">
+        <li data-i18n="services.cloud.f1">AWS, GCP & Azure architecture</li>
+        <li data-i18n="services.cloud.f2">CI/CD pipeline design</li>
+        <li data-i18n="services.cloud.f3">Kubernetes & containerization</li>
+        <li data-i18n="services.cloud.f4">Infrastructure as Code</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-header">
+    <span class="section-number">02</span>
+    <span class="section-label" data-i18n="about.label">About</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-headline" data-i18n="about.headline">Built different,<br><em>by design</em></h2>
+  <p class="section-subtitle" data-i18n="about.subtitle">We're a small, senior team that punches well above its weight.</p>
+  <div class="about-layout">
+    <div class="about-text reveal">
+      <p data-i18n="about.p1"><strong>Black Crow Software</strong> was founded on a simple belief: the best software comes from small teams of exceptional engineers who care deeply about their craft. We're not a factory — we're a studio.</p>
+      <p data-i18n="about.p2">Every project gets our full attention. We partner closely with our clients, embedding ourselves in their teams to understand not just what they need built, but why it matters. The result is software that doesn't just work — it works <strong>beautifully</strong>.</p>
+      <p data-i18n="about.p3">From startups shipping their first MVP to enterprises modernizing legacy systems, we bring the same level of precision, creativity, and engineering rigor to every engagement.</p>
+      <div class="about-stats">
+        <div class="stat-card"><div class="stat-number">50+</div><div class="stat-label" data-i18n="about.stat1">Projects Delivered</div></div>
+        <div class="stat-card"><div class="stat-number">98%</div><div class="stat-label" data-i18n="about.stat2">Client Retention</div></div>
+        <div class="stat-card"><div class="stat-number">8+</div><div class="stat-label" data-i18n="about.stat3">Years Experience</div></div>
+        <div class="stat-card"><div class="stat-number">24/7</div><div class="stat-label" data-i18n="about.stat4">Support Available</div></div>
+      </div>
+    </div>
+    <div class="about-crow-visual reveal">
+      <img src="crow.png" alt="Black Crow Software" class="about-crow-img">
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <div class="section-header">
+    <span class="section-number">03</span>
+    <span class="section-label" data-i18n="portfolio.label">Portfolio</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-headline" data-i18n="portfolio.headline">Selected <em>work</em></h2>
+  <p class="section-subtitle" data-i18n="portfolio.subtitle">A few projects we're proud of. Each one solved a real problem for a real business.</p>
+  <div class="portfolio-grid reveal-stagger">
+    <div class="portfolio-card large reveal">
+      <div class="portfolio-preview"><span class="portfolio-preview-label">[ project screenshot ]</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-meta">
+          <span class="portfolio-category" data-i18n="portfolio.p1.cat">Enterprise Platform</span>
+          <span class="portfolio-year">2025</span>
+        </div>
+        <h3 class="portfolio-title" data-i18n="portfolio.p1.title">Meridian Analytics Dashboard</h3>
+        <p class="portfolio-desc" data-i18n="portfolio.p1.desc">Real-time analytics platform processing 2M+ events/day with sub-second query response times.</p>
+        <div class="portfolio-tags"><span class="tag">React</span><span class="tag">Go</span><span class="tag">ClickHouse</span><span class="tag">Kafka</span><span class="tag">K8s</span></div>
+      </div>
+    </div>
+    <div class="portfolio-card reveal">
+      <div class="portfolio-preview"><span class="portfolio-preview-label">[ project screenshot ]</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-meta">
+          <span class="portfolio-category">AI / ML</span>
+          <span class="portfolio-year">2024</span>
+        </div>
+        <h3 class="portfolio-title" data-i18n="portfolio.p2.title">HeliosAI Medical Triage</h3>
+        <p class="portfolio-desc" data-i18n="portfolio.p2.desc">AI-assisted patient triage system reducing wait times by 40% across 12 hospital networks.</p>
+        <div class="portfolio-tags"><span class="tag">Python</span><span class="tag">PyTorch</span><span class="tag">FastAPI</span></div>
+      </div>
+    </div>
+    <div class="portfolio-card reveal">
+      <div class="portfolio-preview"><span class="portfolio-preview-label">[ project screenshot ]</span></div>
+      <div class="portfolio-info">
+        <div class="portfolio-meta">
+          <span class="portfolio-category" data-i18n="portfolio.p3.cat">Mobile App</span>
+          <span class="portfolio-year">2024</span>
+        </div>
+        <h3 class="portfolio-title">Atlas Pay</h3>
+        <p class="portfolio-desc" data-i18n="portfolio.p3.desc">Cross-platform fintech app serving 200K+ users with real-time payment processing.</p>
+        <div class="portfolio-tags"><span class="tag">React Native</span><span class="tag">Node.js</span><span class="tag">Stripe</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tech">
+  <div class="section-header">
+    <span class="section-number">04</span>
+    <span class="section-label" data-i18n="tech.label">Tech Stack</span>
+    <div class="section-line"></div>
+  </div>
+  <h2 class="section-headline" data-i18n="tech.headline">Our <em>toolkit</em></h2>
+  <p class="section-subtitle" data-i18n="tech.subtitle">We pick the right tools for the job — not the trendiest ones.</p>
+  <div class="tech-layout reveal-stagger">
+    <div class="tech-group reveal">
+      <h3 class="tech-group-title">Frontend</h3>
+      <div class="tech-list">
+        <div class="tech-item"><span class="tech-dot"></span>React / Next.js</div>
+        <div class="tech-item"><span class="tech-dot"></span>Vue / Nuxt</div>
+        <div class="tech-item"><span class="tech-dot"></span>TypeScript</div>
+        <div class="tech-item"><span class="tech-dot"></span>Tailwind CSS</div>
+        <div class="tech-item"><span class="tech-dot"></span>React Native</div>
+      </div>
+    </div>
+    <div class="tech-group reveal">
+      <h3 class="tech-group-title">Backend</h3>
+      <div class="tech-list">
+        <div class="tech-item"><span class="tech-dot"></span>Node.js</div>
+        <div class="tech-item"><span class="tech-dot"></span>Python</div>
+        <div class="tech-item"><span class="tech-dot"></span>Go</div>
+        <div class="tech-item"><span class="tech-dot"></span>.NET / C#</div>
+        <div class="tech-item"><span class="tech-dot"></span>Rust</div>
+      </div>
+    </div>
+    <div class="tech-group reveal">
+      <h3 class="tech-group-title" data-i18n="tech.dataai">Data & AI</h3>
+      <div class="tech-list">
+        <div class="tech-item"><span class="tech-dot"></span>PostgreSQL</div>
+        <div class="tech-item"><span class="tech-dot"></span>Redis</div>
+        <div class="tech-item"><span class="tech-dot"></span>PyTorch</div>
+        <div class="tech-item"><span class="tech-dot"></span>LangChain</div>
+        <div class="tech-item"><span class="tech-dot"></span>Vector DBs</div>
+      </div>
+    </div>
+    <div class="tech-group reveal">
+      <h3 class="tech-group-title" data-i18n="tech.infra">Infrastructure</h3>
+      <div class="tech-list">
+        <div class="tech-item"><span class="tech-dot"></span>AWS / GCP</div>
+        <div class="tech-item"><span class="tech-dot"></span>Kubernetes</div>
+        <div class="tech-item"><span class="tech-dot"></span>Docker</div>
+        <div class="tech-item"><span class="tech-dot"></span>Terraform</div>
+        <div class="tech-item"><span class="tech-dot"></span>GitHub Actions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-banner">
+  <div class="cta-inner reveal">
+    <h2 class="cta-headline" data-i18n="cta.headline">Ready to build<br>something <em>remarkable</em>?</h2>
+    <p class="cta-sub" data-i18n="cta.sub">Let's talk about your next project. No pitch decks, no fluff — just a conversation.</p>
+    <button class="btn-primary" data-i18n="cta.btn">Start a Conversation</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-brand">
+    <img src="logo.png" alt="Black Crow Software" class="footer-logo-img">
+    <span class="footer-text" data-i18n="footer.copy">© 2025 Black Crow Software. All rights reserved.</span>
+  </div>
+  <div class="footer-links">
+    <a href="#">GitHub</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Twitter</a>
+    <a href="#">hello@blackcrowsoftware.com</a>
+  </div>
+</footer>
+
+<script>
+const translations = {
+  en: {
+    "nav.services": "Services",
+    "nav.about": "About",
+    "nav.work": "Work",
+    "nav.tech": "Tech",
+    "nav.cta": "Get in Touch",
+    "hero.tag": "Software Engineering Studio",
+    "hero.title": 'We build software<br>that <em>elevates</em>',
+    "hero.desc": "Black Crow Software is a boutique engineering studio specializing in custom software, AI solutions, and cloud infrastructure. We turn complex problems into elegant, scalable systems.",
+    "hero.cta1": "Start a Project",
+    "hero.cta2": "View Our Work",
+    "services.label": "Services",
+    "services.headline": 'What we <em>do</em>',
+    "services.subtitle": "End-to-end engineering services, from ideation through deployment and beyond. We don't just write code — we architect solutions.",
+    "services.custom.title": "Custom Software Development",
+    "services.custom.desc": "Tailored systems built from the ground up. Enterprise platforms, internal tools, SaaS products — designed for scale from day one.",
+    "services.custom.f1": "Full-stack architecture & development",
+    "services.custom.f2": "API design & microservices",
+    "services.custom.f3": "Legacy system modernization",
+    "services.custom.f4": "Performance optimization",
+    "services.ai.title": "AI & Machine Learning",
+    "services.ai.desc": "Intelligent systems that learn, adapt, and deliver real business value. From NLP to computer vision to predictive analytics.",
+    "services.ai.f1": "Custom model training & fine-tuning",
+    "services.ai.f2": "LLM integration & RAG pipelines",
+    "services.ai.f3": "MLOps & model deployment",
+    "services.ai.f4": "Data pipeline engineering",
+    "services.web.title": "Web & Mobile Apps",
+    "services.web.desc": "Beautiful, performant applications across every platform. Responsive web apps and native mobile experiences that users love.",
+    "services.web.f1": "React, Next.js & Vue applications",
+    "services.web.f2": "iOS & Android development",
+    "services.web.f3": "Progressive web apps",
+    "services.web.f4": "UI/UX design & prototyping",
+    "services.cloud.title": "Cloud & DevOps",
+    "services.cloud.desc": "Infrastructure that scales with your ambition. We design, build, and manage cloud environments that are secure, fast, and cost-efficient.",
+    "services.cloud.f1": "AWS, GCP & Azure architecture",
+    "services.cloud.f2": "CI/CD pipeline design",
+    "services.cloud.f3": "Kubernetes & containerization",
+    "services.cloud.f4": "Infrastructure as Code",
+    "about.label": "About",
+    "about.headline": 'Built different,<br><em>by design</em>',
+    "about.subtitle": "We're a small, senior team that punches well above its weight.",
+    "about.p1": "<strong>Black Crow Software</strong> was founded on a simple belief: the best software comes from small teams of exceptional engineers who care deeply about their craft. We're not a factory — we're a studio.",
+    "about.p2": "Every project gets our full attention. We partner closely with our clients, embedding ourselves in their teams to understand not just what they need built, but why it matters. The result is software that doesn't just work — it works <strong>beautifully</strong>.",
+    "about.p3": "From startups shipping their first MVP to enterprises modernizing legacy systems, we bring the same level of precision, creativity, and engineering rigor to every engagement.",
+    "about.stat1": "Projects Delivered",
+    "about.stat2": "Client Retention",
+    "about.stat3": "Years Experience",
+    "about.stat4": "Support Available",
+    "portfolio.label": "Portfolio",
+    "portfolio.headline": 'Selected <em>work</em>',
+    "portfolio.subtitle": "A few projects we're proud of. Each one solved a real problem for a real business.",
+    "portfolio.p1.cat": "Enterprise Platform",
+    "portfolio.p1.title": "Meridian Analytics Dashboard",
+    "portfolio.p1.desc": "Real-time analytics platform processing 2M+ events/day with sub-second query response times.",
+    "portfolio.p2.title": "HeliosAI Medical Triage",
+    "portfolio.p2.desc": "AI-assisted patient triage system reducing wait times by 40% across 12 hospital networks.",
+    "portfolio.p3.cat": "Mobile App",
+    "portfolio.p3.desc": "Cross-platform fintech app serving 200K+ users with real-time payment processing.",
+    "tech.label": "Tech Stack",
+    "tech.headline": 'Our <em>toolkit</em>',
+    "tech.subtitle": "We pick the right tools for the job — not the trendiest ones.",
+    "tech.dataai": "Data & AI",
+    "tech.infra": "Infrastructure",
+    "cta.headline": 'Ready to build<br>something <em>remarkable</em>?',
+    "cta.sub": "Let's talk about your next project. No pitch decks, no fluff — just a conversation.",
+    "cta.btn": "Start a Conversation",
+    "footer.copy": "© 2025 Black Crow Software. All rights reserved."
+  },
+  es: {
+    "nav.services": "Servicios",
+    "nav.about": "Nosotros",
+    "nav.work": "Proyectos",
+    "nav.tech": "Tecnología",
+    "nav.cta": "Contáctenos",
+    "hero.tag": "Estudio de Ingeniería de Software",
+    "hero.title": 'Construimos software<br>que <em>trasciende</em>',
+    "hero.desc": "Black Crow Software es un estudio boutique de ingeniería especializado en software a medida, soluciones de IA e infraestructura en la nube. Transformamos problemas complejos en sistemas elegantes y escalables.",
+    "hero.cta1": "Iniciar un Proyecto",
+    "hero.cta2": "Ver Nuestro Trabajo",
+    "services.label": "Servicios",
+    "services.headline": 'Lo que <em>hacemos</em>',
+    "services.subtitle": "Servicios de ingeniería de principio a fin, desde la ideación hasta el despliegue y más allá. No solo escribimos código — diseñamos soluciones.",
+    "services.custom.title": "Desarrollo de Software a Medida",
+    "services.custom.desc": "Sistemas diseñados desde cero. Plataformas empresariales, herramientas internas, productos SaaS — diseñados para escalar desde el primer día.",
+    "services.custom.f1": "Arquitectura & desarrollo full-stack",
+    "services.custom.f2": "Diseño de APIs & microservicios",
+    "services.custom.f3": "Modernización de sistemas legados",
+    "services.custom.f4": "Optimización de rendimiento",
+    "services.ai.title": "IA & Machine Learning",
+    "services.ai.desc": "Sistemas inteligentes que aprenden, se adaptan y generan valor real de negocio. Desde NLP hasta visión por computadora y análisis predictivo.",
+    "services.ai.f1": "Entrenamiento & ajuste fino de modelos",
+    "services.ai.f2": "Integración de LLMs & pipelines RAG",
+    "services.ai.f3": "MLOps & despliegue de modelos",
+    "services.ai.f4": "Ingeniería de pipelines de datos",
+    "services.web.title": "Aplicaciones Web & Móviles",
+    "services.web.desc": "Aplicaciones hermosas y de alto rendimiento en cada plataforma. Apps web responsivas y experiencias móviles nativas que los usuarios aman.",
+    "services.web.f1": "Aplicaciones React, Next.js & Vue",
+    "services.web.f2": "Desarrollo iOS & Android",
+    "services.web.f3": "Progressive web apps",
+    "services.web.f4": "Diseño UI/UX & prototipado",
+    "services.cloud.title": "Cloud & DevOps",
+    "services.cloud.desc": "Infraestructura que escala con tu ambición. Diseñamos, construimos y gestionamos entornos cloud seguros, rápidos y eficientes en costos.",
+    "services.cloud.f1": "Arquitectura AWS, GCP & Azure",
+    "services.cloud.f2": "Diseño de pipelines CI/CD",
+    "services.cloud.f3": "Kubernetes & contenedores",
+    "services.cloud.f4": "Infraestructura como Código",
+    "about.label": "Nosotros",
+    "about.headline": 'Construidos diferente,<br><em>por diseño</em>',
+    "about.subtitle": "Somos un equipo pequeño y senior que rinde muy por encima de su peso.",
+    "about.p1": "<strong>Black Crow Software</strong> fue fundado con una creencia simple: el mejor software proviene de equipos pequeños de ingenieros excepcionales que se preocupan profundamente por su oficio. No somos una fábrica — somos un estudio.",
+    "about.p2": "Cada proyecto recibe nuestra atención completa. Nos asociamos estrechamente con nuestros clientes, integrándanos en sus equipos para entender no solo lo que necesitan construir, sino por qué importa. El resultado es software que no solo funciona — funciona <strong>hermosamente</strong>.",
+    "about.p3": "Desde startups lanzando su primer MVP hasta empresas modernizando sistemas legados, aportamos el mismo nivel de precisión, creatividad y rigor de ingeniería a cada proyecto.",
+    "about.stat1": "Proyectos Entregados",
+    "about.stat2": "Retención de Clientes",
+    "about.stat3": "Años de Experiencia",
+    "about.stat4": "Soporte Disponible",
+    "portfolio.label": "Portafolio",
+    "portfolio.headline": 'Trabajo <em>selecto</em>',
+    "portfolio.subtitle": "Algunos proyectos de los que estamos orgullosos. Cada uno resolvió un problema real para un negocio real.",
+    "portfolio.p1.cat": "Plataforma Empresarial",
+    "portfolio.p1.title": "Meridian Analytics Dashboard",
+    "portfolio.p1.desc": "Plataforma de analítica en tiempo real procesando 2M+ eventos/día con tiempos de respuesta inferiores al segundo.",
+    "portfolio.p2.title": "HeliosAI Triaje Médico",
+    "portfolio.p2.desc": "Sistema de triaje asistido por IA que redujo tiempos de espera en un 40% en 12 redes hospitalarias.",
+    "portfolio.p3.cat": "App Móvil",
+    "portfolio.p3.desc": "App fintech multiplataforma con 200K+ usuarios y procesamiento de pagos en tiempo real.",
+    "tech.label": "Stack Tecnológico",
+    "tech.headline": 'Nuestras <em>herramientas</em>',
+    "tech.subtitle": "Elegimos las herramientas correctas para el trabajo — no las más de moda.",
+    "tech.dataai": "Datos & IA",
+    "tech.infra": "Infraestructura",
+    "cta.headline": '¿Listo para construir<br>algo <em>extraordinario</em>?',
+    "cta.sub": "Hablemos de tu próximo proyecto. Sin presentaciones, sin relleno — solo una conversación.",
+    "cta.btn": "Iniciar una Conversación",
+    "footer.copy": "© 2025 Black Crow Software. Todos los derechos reservados."
+  }
+};
+
+// i18n engine
+function setLanguage(lang) {
+  const dict = translations[lang];
+  if (!dict) return;
+
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.innerHTML = dict[key];
+  });
+
+  // Update active button
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // Update page title
+  document.title = lang === 'es' 
+    ? 'Black Crow Software — Diseñando el Futuro' 
+    : 'Black Crow Software — Engineering the Future';
+
+  // Persist choice
+  localStorage.setItem('bcs-lang', lang);
+}
+
+// Language switch buttons
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+});
+
+// Auto-detect: check saved preference first, then browser locale
+(function() {
+  const saved = localStorage.getItem('bcs-lang');
+  if (saved && translations[saved]) {
+    setLanguage(saved);
+    return;
+  }
+  const browserLang = navigator.language || navigator.userLanguage || 'en';
+  const lang = browserLang.startsWith('es') ? 'es' : 'en';
+  setLanguage(lang);
+})();
+
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
